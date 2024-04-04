@@ -1,0 +1,1970 @@
+{
+	"info": {
+		"_postman_id": "01bec5ca-c07b-459d-9f2e-4593bc64563c",
+		"name": "ServeRest",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33996619"
+	},
+	"item": [
+		{
+			"name": "Cadastrar",
+			"item": [
+				{
+					"name": "CT13: Cadastro de novo usuário com dados válidos",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status Code 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Mensagem Correta\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    \r",
+									"    // Verifica o campo \"message\"\r",
+									"    if (jsonData.message !== \"Cadastro realizado com sucesso\") {\r",
+									"        pm.expect(jsonData.message).to.eql(\"Cadastro realizado com sucesso\");\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Retornado ID\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    \r",
+									"    // Verifica se o campo \"id\" está presente\r",
+									"        pm.expect(jsonData).to.have.property(\"_id\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\": \"{{$randomFullName}}\",\r\n    \"email\": \"{{$randomEmail}}\",\r\n    \"password\": \"{{$randomPassword}}\",\r\n    \"administrador\": \"{{$randomBoolean}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://serverest.dev/usuarios",
+							"protocol": "https",
+							"host": [
+								"serverest",
+								"dev"
+							],
+							"path": [
+								"usuarios"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CT14: Cadastro de novo usuário com e-mail já existente",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status Code 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Mensagem Correta\", function () {\r",
+									"    \r",
+									"    const jsonData = pm.response.json();\r",
+									"    \r",
+									"    if (jsonData.message !== \"Este email já está sendo usado\") {\r",
+									"        pm.expect(jsonData.message).to.eql(\"Este email já está sendo usado\");\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"\r",
+									"const userEmail = pm.variables.replaceIn('{{$randomInt}}{{$randomEmail}}')\r",
+									"\r",
+									"pm.variables.set(\"emailBody\", userEmail);\r",
+									"\r",
+									"const postRequest = {\r",
+									"  \r",
+									"    url: 'https://serverest.dev/usuarios',\r",
+									"    method: 'POST',\r",
+									"    header: {\r",
+									"        'content-type': 'application/json',\r",
+									"    },\r",
+									"\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({ \r",
+									"            nome: 'teste',\r",
+									"            email: userEmail,\r",
+									"            password: 'Abc12345',\r",
+									"            administrador: 'true'\r",
+									"         })\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"pm.sendRequest(postRequest, function (err, response) {\r",
+									"\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\": \"{{$randomFullName}}\",\r\n    \"email\": \"{{emailBody}}\",\r\n    \"password\": \"{{$randomPassword}}\",\r\n    \"administrador\": \"{{$randomBoolean}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://serverest.dev/usuarios/",
+							"protocol": "https",
+							"host": [
+								"serverest",
+								"dev"
+							],
+							"path": [
+								"usuarios",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CT15: Cadastro de novo usuário com nome vazio",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status Code 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Mensagem Correta\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    \r",
+									"    // Verifica o campo \"nome\"\r",
+									"    if (jsonData.nome !== \"nome não pode ficar em branco\") {\r",
+									"        pm.expect(jsonData.nome).to.eql(\"nome não pode ficar em branco\");\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\": \"\",\r\n    \"email\": \"{{userEmail}}\",\r\n    \"password\": \"{{$randomPassword}}\",\r\n    \"administrador\": \"{{$randomBoolean}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://serverest.dev/usuarios",
+							"protocol": "https",
+							"host": [
+								"serverest",
+								"dev"
+							],
+							"path": [
+								"usuarios"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CT16: Cadastro de novo usuário com e-mail vazio",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status Code 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Mensagem Correta\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"\r",
+									"    // Verifica o campo \"email\"\r",
+									"    if (jsonData.email !== \"email não pode ficar em branco\") {\r",
+									"        pm.expect(jsonData.email).to.eql(\"email não pode ficar em branco\");\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\": \"{{$randomFullName}}\",\r\n    \"email\": \"\",\r\n    \"password\": \"{{$randomPassword}}\",\r\n    \"administrador\": \"{{$randomBoolean}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://serverest.dev/usuarios",
+							"protocol": "https",
+							"host": [
+								"serverest",
+								"dev"
+							],
+							"path": [
+								"usuarios"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CT17: Cadastro de novo usuário com password vazio",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status Code 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Mensagem Correta\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    \r",
+									"    // Verifica o campo \"password\"\r",
+									"    if (jsonData.password !== \"password não pode ficar em branco\") {\r",
+									"        pm.expect(jsonData.password).to.eql(\"password não pode ficar em branco\");\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\": \"{{$randomFullName}}\",\r\n    \"email\": \"{{userEmail}}\",\r\n    \"password\": \"\",\r\n    \"administrador\": \"{{$randomBoolean}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://serverest.dev/usuarios",
+							"protocol": "https",
+							"host": [
+								"serverest",
+								"dev"
+							],
+							"path": [
+								"usuarios"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CT18: Cadastro de novo usuário com nível de acesso vazio",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status Code 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Mensagem Correta\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    \r",
+									"    // Verifica o campo \"administrador\"\r",
+									"    if (jsonData.administrador !== \"administrador deve ser 'true' ou 'false'\") {\r",
+									"        pm.expect(jsonData.administrador).to.eql(\"administrador deve ser 'true' ou 'false'\");\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\": \"{{$randomFullName}}\",\r\n    \"email\": \"{{userEmail}}\",\r\n    \"password\": \"{{$randomPassword}}\",\r\n    \"administrador\": \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://serverest.dev/usuarios",
+							"protocol": "https",
+							"host": [
+								"serverest",
+								"dev"
+							],
+							"path": [
+								"usuarios"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CT19: Cadastro de novo usuário com nome inválido (caracteres numéricos)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status Code 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Mensagem Correta\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    \r",
+									"    // Verifica o campo \"nome\"\r",
+									"    if (jsonData.nome !== \"nome deve conter apenas caracteres alfabéticos\") {\r",
+									"        pm.expect(jsonData.nome).to.eql(\"nome deve conter apenas caracteres alfabéticos\");\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\": \"{{$randomInt}}\",\r\n    \"email\": \"{{$randomEmail}}\",\r\n    \"password\": \"{{$randomPassword}}\",\r\n    \"administrador\": \"{{$randomBoolean}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://serverest.dev/usuarios",
+							"protocol": "https",
+							"host": [
+								"serverest",
+								"dev"
+							],
+							"path": [
+								"usuarios"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CT20: Cadastro de novo usuário com nome inválido (caracteres símbolos)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status Code 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Mensagem Correta\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    \r",
+									"    // Verifica o campo \"nome\"\r",
+									"    if (jsonData.nome !== \"nome deve conter apenas caracteres alfabéticos\") {\r",
+									"        pm.expect(jsonData.nome).to.eql(\"nome deve conter apenas caracteres alfabéticos\");\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\": \"!@#$%^&*()-_=+[]{}\\\\|;:'<>,.?/`~\",\r\n    \"email\": \"{{$randomEmail}}\",\r\n    \"password\": \"{{$randomPassword}}\",\r\n    \"administrador\": \"{{$randomBoolean}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://serverest.dev/usuarios",
+							"protocol": "https",
+							"host": [
+								"serverest",
+								"dev"
+							],
+							"path": [
+								"usuarios"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CT21: Cadastro de novo usuário com e-mail inválido",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status Code 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Mensagem Correta\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"\r",
+									"    // Verifica o campo \"email\"\r",
+									"    if (jsonData.email !== \"email deve ser um email válido\") {\r",
+									"        pm.expect(jsonData.email).to.eql(\"email deve ser um email válido\");\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\": \"{{$randomFullName}}\",\r\n    \"email\": \"{{$randomPassword}}\",\r\n    \"password\": \"{{$randomPassword}}\",\r\n    \"administrador\": \"{{$randomBoolean}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://serverest.dev/usuarios",
+							"protocol": "https",
+							"host": [
+								"serverest",
+								"dev"
+							],
+							"path": [
+								"usuarios"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CT22: Cadastro de novo usuário com password inválido",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status Code 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Mensagem Correta\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    \r",
+									"    // Verifica o campo \"password\"\r",
+									"    if (jsonData.password !== \"password deve conter um mínimo de 8 caracteres\") {\r",
+									"        pm.expect(jsonData.password).to.eql(\"password deve conter um mínimo de 8 caracteres\");\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\": \"{{$randomFullName}}\",\r\n    \"email\": \"{{$randomEmail}}\",\r\n    \"password\": \"{{$randomInt}}\",\r\n    \"administrador\": \"{{$randomBoolean}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://serverest.dev/usuarios",
+							"protocol": "https",
+							"host": [
+								"serverest",
+								"dev"
+							],
+							"path": [
+								"usuarios"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CT23: Cadastro de novo usuário com nível de acesso inválido",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status Code 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Mensagem Correta'\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    \r",
+									"    // Verifica o campo \"administrador\"\r",
+									"    if (jsonData.administrador !== \"administrador deve ser 'true' ou 'false'\") {\r",
+									"        pm.expect(jsonData.administrador).to.eql(\"administrador deve ser 'true' ou 'false'\");\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\": \"{{$randomFullName}}\",\r\n    \"email\": \"{{$randomEmail}}\",\r\n    \"password\": \"{{$randomPassword}}\",\r\n    \"administrador\": \"{{$randomPassword}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://serverest.dev/usuarios",
+							"protocol": "https",
+							"host": [
+								"serverest",
+								"dev"
+							],
+							"path": [
+								"usuarios"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CT24: Cadastro de novo usuário com valor limite máximo válido no campo nome",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status Code 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Mensagem Correta\", function () {\r",
+									"    const jsonData = pm.response.json();\r",
+									"    \r",
+									"    if (jsonData.message !== \"Cadastro realizado com sucesso\") {\r",
+									"        pm.expect(jsonData.message).to.eql(\"Cadastro realizado com sucesso\");\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Retornado ID\", function () {\r",
+									"    const jsonData = pm.response.json();\r",
+									"    \r",
+									"        pm.expect(jsonData).to.have.property(\"_id\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\": \"QAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQA\",\r\n    \"email\": \"{{$randomEmail}}\",\r\n    \"password\": \"{{$randomPassword}}\",\r\n    \"administrador\": \"{{$randomBoolean}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://serverest.dev/usuarios",
+							"protocol": "https",
+							"host": [
+								"serverest",
+								"dev"
+							],
+							"path": [
+								"usuarios"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CT25: Cadastro de novo usuário com valor limite máximo válido no campo e-mail",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status Code 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Mensagem Correta\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    \r",
+									"    // Verifica o campo \"message\"\r",
+									"    if (jsonData.message !== \"Cadastro realizado com sucesso\") {\r",
+									"        pm.expect(jsonData.message).to.eql(\"Cadastro realizado com sucesso\");\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Retornado ID\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    \r",
+									"    // Verifica se o campo \"id\" está presente\r",
+									"        pm.expect(jsonData).to.have.property(\"_id\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const userEmail = pm.variables.replaceIn(`{{$randomBankAccount}}QAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQA@qa.com.br`)\r",
+									"\r",
+									"pm.variables.set(\"emailBody\", userEmail);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\": \"{{$randomFullName}}\",\r\n    \"email\": \"{{emailBody}}\",\r\n    \"password\": \"{{$randomPassword}}\",\r\n    \"administrador\": \"{{$randomBoolean}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://serverest.dev/usuarios",
+							"protocol": "https",
+							"host": [
+								"serverest",
+								"dev"
+							],
+							"path": [
+								"usuarios"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CT26: Cadastro de novo usuário com valor limite máximo válido no campo password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status Code 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Mensagem Correta\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    \r",
+									"    // Verifica o campo \"message\"\r",
+									"    if (jsonData.message !== \"Cadastro realizado com sucesso\") {\r",
+									"        pm.expect(jsonData.message).to.eql(\"Cadastro realizado com sucesso\");\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Retornado ID\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    \r",
+									"    // Verifica se o campo \"id\" está presente\r",
+									"        pm.expect(jsonData).to.have.property(\"_id\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\": \"{{$randomFullName}}\",\r\n    \"email\": \"{{$randomEmail}}\",\r\n    \"password\": \"QAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQAQA\",\r\n    \"administrador\": \"{{$randomBoolean}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://serverest.dev/usuarios",
+							"protocol": "https",
+							"host": [
+								"serverest",
+								"dev"
+							],
+							"path": [
+								"usuarios"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CT27: Cadastro de novo usuário com valor limite mínimo válido no campo nome",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status Code 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Mensagem Correta\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    \r",
+									"    // Verifica o campo \"message\"\r",
+									"    if (jsonData.message !== \"Cadastro realizado com sucesso\") {\r",
+									"        pm.expect(jsonData.message).to.eql(\"Cadastro realizado com sucesso\");\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Retornado ID\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    \r",
+									"    // Verifica se o campo \"id\" está presente\r",
+									"        pm.expect(jsonData).to.have.property(\"_id\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const userEmail = pm.variables.replaceIn(`{{$randomLocale}}@{{$randomLocale}}.{{$randomDomainSuffix}}.br`)\r",
+									"\r",
+									"pm.variables.set(\"emailBody\", userEmail);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"nome\": \"tst\",\r\n  \"email\": \"{{emailBody}}\",\r\n  \"password\": \"abc12345\",\r\n  \"administrador\": \"false\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://serverest.dev/usuarios",
+							"protocol": "https",
+							"host": [
+								"serverest",
+								"dev"
+							],
+							"path": [
+								"usuarios"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CT28: Cadastro de novo usuário com valor limite mínimo válido no campo e-mail",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status Code 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Mensagem Correta\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    \r",
+									"    // Verifica o campo \"message\"\r",
+									"    if (jsonData.message !== \"Cadastro realizado com sucesso\") {\r",
+									"        pm.expect(jsonData.message).to.eql(\"Cadastro realizado com sucesso\");\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Retornado ID\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    \r",
+									"    // Verifica se o campo \"id\" está presente\r",
+									"        pm.expect(jsonData).to.have.property(\"_id\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const userEmail = pm.variables.replaceIn(`{{$randomAlphaNumeric}}@qa.com`)\r",
+									"\r",
+									"pm.variables.set(\"emailBody\", userEmail);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\": \"{{$randomFullName}}\",\r\n    \"email\": \"{{emailBody}}\",\r\n    \"password\": \"{{$randomPassword}}\",\r\n    \"administrador\": \"{{$randomBoolean}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://serverest.dev/usuarios",
+							"protocol": "https",
+							"host": [
+								"serverest",
+								"dev"
+							],
+							"path": [
+								"usuarios"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CT29: Cadastro de novo usuário com valor limite mínimo válido no campo password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status Code 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Mensagem Correta\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    \r",
+									"    // Verifica o campo \"message\"\r",
+									"    if (jsonData.message !== \"Cadastro realizado com sucesso\") {\r",
+									"        pm.expect(jsonData.message).to.eql(\"Cadastro realizado com sucesso\");\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Retornado ID\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    \r",
+									"    // Verifica se o campo \"id\" está presente\r",
+									"        pm.expect(jsonData).to.have.property(\"_id\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\": \"{{$randomFullName}}\",\r\n    \"email\": \"{{$randomEmail}}\",\r\n    \"password\": \"{{$randomBankAccount}}\",\r\n    \"administrador\": \"{{$randomBoolean}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://serverest.dev/usuarios",
+							"protocol": "https",
+							"host": [
+								"serverest",
+								"dev"
+							],
+							"path": [
+								"usuarios"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CT30: Cadastro de novo usuário com valor limite mínimo inválido no campo nome",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status Code 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Mensagem Correta\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    \r",
+									"    // Verifica o campo \"nome\"\r",
+									"    if (jsonData.nome !== \"nome deve conter no mínimo 3 caracteres alfabéticos\") {\r",
+									"        pm.expect(jsonData.nome).to.eql(\"nome deve conter no mínimo 3 caracteres alfabéticos\");\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\": \"{{$randomLocale}}\",\r\n    \"email\": \"{{$randomEmail}}\",\r\n    \"password\": \"{{$randomPassword}}\",\r\n    \"administrador\": \"{{$randomBoolean}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://serverest.dev/usuarios",
+							"protocol": "https",
+							"host": [
+								"serverest",
+								"dev"
+							],
+							"path": [
+								"usuarios"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CT31: Cadastro de novo usuário com valor limite mínimo inválido no campo e-mail",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status Code 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Mensagem Correta\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"\r",
+									"    // Verifica o campo \"email\"\r",
+									"    if (jsonData.email !== \"email deve ser um email válido\") {\r",
+									"        pm.expect(jsonData.email).to.eql(\"email deve ser um email válido\");\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const userEmail = pm.variables.replaceIn(`{{$randomAlphaNumeric}}@qc`)\r",
+									"\r",
+									"pm.variables.set(\"emailBody\", userEmail);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\": \"{{$randomFullName}}\",\r\n    \"email\": \"{{emailBody}}\",\r\n    \"password\": \"{{$randomPassword}}\",\r\n    \"administrador\": \"{{$randomBoolean}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://serverest.dev/usuarios",
+							"protocol": "https",
+							"host": [
+								"serverest",
+								"dev"
+							],
+							"path": [
+								"usuarios"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CT32: Cadastro de novo usuário com valor limite mínimo inválido no campo password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status Code 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Mensagem Correta\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    \r",
+									"    // Verifica o campo \"password\"\r",
+									"    if (jsonData.password !== \"password deve conter conter no mínimo 8 caracteres\") {\r",
+									"        pm.expect(jsonData.password).to.eql(\"password deve conter no mínimo 8 caracteres\");\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const userPassword = pm.variables.replaceIn(`{{$randomInt}}a{{$randomInt}}`)\r",
+									"\r",
+									"pm.variables.set(\"passwordBody\", userPassword);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\": \"{{$randomFullName}}\",\r\n    \"email\": \"{{$randomEmail}}\",\r\n    \"password\": \"{{passwordBody}}\",\r\n    \"administrador\": \"{{$randomBoolean}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://serverest.dev/usuarios",
+							"protocol": "https",
+							"host": [
+								"serverest",
+								"dev"
+							],
+							"path": [
+								"usuarios"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CT33: Cadastro real de novo usuário com dados válidos",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJson = pm.response.json();\r",
+									"const user_id = responseJson._id;\r",
+									"\r",
+									"pm.test(\"Usuário editado com sucesso\", function () {\r",
+									"    const getRequest = {\r",
+									"    url: `https://serverest.dev/usuarios/${user_id}`,\r",
+									"    method: 'GET'};\r",
+									"    pm.sendRequest(getRequest, function (err, response) {\r",
+									"        const responseBody = response.json();\r",
+									"    });\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\": \"{{$randomFullName}}\",\r\n    \"email\": \"{{$randomEmail}}\",\r\n    \"password\": \"{{$randomPassword}}\",\r\n    \"administrador\": \"{{$randomBoolean}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://serverest.dev/usuarios",
+							"protocol": "https",
+							"host": [
+								"serverest",
+								"dev"
+							],
+							"path": [
+								"usuarios"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Listar",
+			"item": [
+				{
+					"name": "CT34: Listagem de usuários",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status Code 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Atributo quantidade existe\", function () {\r",
+									"    pm.expect(pm.response.json()).to.have.property('quantidade');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Atributo usuários existe e é uma lista\", function () {\r",
+									"    pm.expect(pm.response.json()).to.have.property('usuarios').that.is.an('array');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Usuários possuem os atributos corretos\", function () {\r",
+									"    \r",
+									"    const usuarios = pm.response.json().usuarios;\r",
+									"    \r",
+									"    usuarios.forEach(function(usuario) {\r",
+									"        pm.expect(usuario).to.have.property('nome');\r",
+									"        pm.expect(usuario).to.have.property('email');\r",
+									"        pm.expect(usuario).to.have.property('password');\r",
+									"        pm.expect(usuario).to.have.property('administrador');\r",
+									"        pm.expect(usuario).to.have.property('_id');\r",
+									"    });\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://serverest.dev/usuarios",
+							"protocol": "https",
+							"host": [
+								"serverest",
+								"dev"
+							],
+							"path": [
+								"usuarios"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Buscar",
+			"item": [
+				{
+					"name": "CT35: Busca de usuário existente",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const userEmail = pm.variables.replaceIn('{{$randomInt}}{{$randomEmail}}')\r",
+									"\r",
+									"const postRequest = {\r",
+									"  \r",
+									"    url: 'https://serverest.dev/usuarios',\r",
+									"    method: 'POST',\r",
+									"    header: {\r",
+									"        'content-type': 'application/json',\r",
+									"    },\r",
+									"\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({ \r",
+									"            nome: 'teste',\r",
+									"            email: userEmail,\r",
+									"            password: 'Abc12345',\r",
+									"            administrador: 'true'\r",
+									"        })\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"pm.sendRequest(postRequest, function (err, response) {\r",
+									"    pm.globals.set('user_id', response.json()._id);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status Code 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Atributo nome existe\", function () {\r",
+									"    pm.expect(pm.response.json()).to.have.property('nome');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Atributo email existe\", function () {\r",
+									"    pm.expect(pm.response.json()).to.have.property('email');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Atributo password existe\", function () {\r",
+									"    pm.expect(pm.response.json()).to.have.property('password');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Atributo administrador existe\", function () {\r",
+									"    pm.expect(pm.response.json()).to.have.property('administrador');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Atributo id existe\", function () {\r",
+									"    pm.expect(pm.response.json()).to.have.property('_id');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://serverest.dev/usuarios/:id",
+							"protocol": "https",
+							"host": [
+								"serverest",
+								"dev"
+							],
+							"path": [
+								"usuarios",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{user_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CT36: Busca de usuário inexistente",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status Code 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Mensagem Correta\", function () {\r",
+									"    \r",
+									"    const jsonData = pm.response.json();\r",
+									"\r",
+									"    if (jsonData.message !== \"Usuário não encontrado\") {\r",
+									"        pm.expect(jsonData.message).to.eql(\"Usuário não encontrado\");\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://serverest.dev/usuarios/:id",
+							"protocol": "https",
+							"host": [
+								"serverest",
+								"dev"
+							],
+							"path": [
+								"usuarios",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{$randomInt}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Editar",
+			"item": [
+				{
+					"name": "CT37: Edição de usuário com dados válidos",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status Code 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Mensagem Correta\", function () {\r",
+									"    \r",
+									"    const jsonData = pm.response.json();\r",
+									"    \r",
+									"    if (jsonData.message !== \"Registro alterado com sucesso\") {\r",
+									"        pm.expect(jsonData.message).to.eql(\"Registro alterado com sucesso\");\r",
+									"    }\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const userEmail = pm.variables.replaceIn('{{$randomInt}}{{$randomEmail}}')\r",
+									"\r",
+									"const postRequest = {\r",
+									"  \r",
+									"    url: 'https://serverest.dev/usuarios',\r",
+									"    method: 'POST',\r",
+									"    header: {\r",
+									"        'content-type': 'application/json',\r",
+									"    },\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({ \r",
+									"            nome: 'teste',\r",
+									"            email: userEmail,\r",
+									"            password: 'Abc12345',\r",
+									"            administrador: 'true'\r",
+									"        })\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"pm.sendRequest(postRequest, function (err, response) {\r",
+									"    pm.globals.set('user_id', response.json()._id);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\": \"{{$randomFullName}}\",\r\n    \"email\": \"{{$randomEmail}}\",\r\n    \"password\": \"{{$randomPassword}}\",\r\n    \"administrador\": \"{{$randomBoolean}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://serverest.dev/usuarios/:id",
+							"protocol": "https",
+							"host": [
+								"serverest",
+								"dev"
+							],
+							"path": [
+								"usuarios",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{user_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CT38: Edição de usuário inexistente com dados válidos",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status Code 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Mensagem Correta\", function () {\r",
+									"    \r",
+									"    const jsonData = pm.response.json();\r",
+									"    \r",
+									"    if (jsonData.message !== \"Cadastro realizado com sucesso\") {\r",
+									"        pm.expect(jsonData.message).to.eql(\"Cadastro realizado com sucesso\");\r",
+									"    }\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.globals.set('user_id', '{{$randomInt}}');"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\": \"{{$randomFullName}}\",\r\n    \"email\": \"{{$randomEmail}}\",\r\n    \"password\": \"{{$randomPassword}}\",\r\n    \"administrador\": \"{{$randomBoolean}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://serverest.dev/usuarios/:id",
+							"protocol": "https",
+							"host": [
+								"serverest",
+								"dev"
+							],
+							"path": [
+								"usuarios",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{user_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CT39: Edição real de usuário com dados válidos",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const user_id = pm.variables.get('user_id')\r",
+									"const editedName = JSON.parse(pm.request.body.raw).nome\r",
+									"const editedEmail = JSON.parse(pm.request.body.raw).email\r",
+									"const editedPassword = JSON.parse(pm.request.body.raw).password\r",
+									"const editedAdministrator = JSON.parse(pm.request.body.raw).administrador\r",
+									"\r",
+									"pm.test(\"Usuário editado com sucesso\", function () {\r",
+									"    \r",
+									"    const getRequest = {\r",
+									"    \r",
+									"    url: `https://serverest.dev/usuarios/${user_id}`,\r",
+									"    method: 'GET',\r",
+									"    header: {\r",
+									"        'content-type': 'application/json',\r",
+									"        },\r",
+									"    };\r",
+									"\r",
+									"    pm.sendRequest(getRequest, function (err, response) {\r",
+									"        \r",
+									"        const responseBody = response.json();\r",
+									"        pm.expect(responseBody.nome).to.eql(editedName);\r",
+									"        pm.expect(responseBody.email).to.eql(editedEmail);\r",
+									"        pm.expect(responseBody.password).to.eql(editedPassword);\r",
+									"        pm.expect(responseBody.administrador).to.eql(editedAdministrator);\r",
+									"    });\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let userEmail = pm.variables.replaceIn('{{$randomInt}}{{$randomEmail}}')\r",
+									"\r",
+									"const postRequest = {\r",
+									"  \r",
+									"    url: 'https://serverest.dev/usuarios',\r",
+									"    method: 'POST',\r",
+									"    header: {\r",
+									"        'content-type': 'application/json',\r",
+									"    },\r",
+									"\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({ \r",
+									"            nome: 'teste',\r",
+									"            email: userEmail,\r",
+									"            password: 'Abc12345',\r",
+									"            administrador: 'true'\r",
+									"        })\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"pm.sendRequest(postRequest, function (err, response) {\r",
+									"    pm.globals.set('user_id', response.json()._id);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\": \"{{$randomFullName}}\",\r\n    \"email\": \"{{$randomEmail}}\",\r\n    \"password\": \"{{$randomPassword}}\",\r\n    \"administrador\": \"{{$randomBoolean}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://serverest.dev/usuarios/:id",
+							"protocol": "https",
+							"host": [
+								"serverest",
+								"dev"
+							],
+							"path": [
+								"usuarios",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{user_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Delete",
+			"item": [
+				{
+					"name": "CT40: Exclusão de usuário existente",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const userEmail = pm.variables.replaceIn('{{$randomInt}}{{$randomEmail}}')\r",
+									"\r",
+									"const postRequest = {\r",
+									"  \r",
+									"    url: 'https://serverest.dev/usuarios',\r",
+									"    method: 'POST',\r",
+									"    header: {\r",
+									"        'content-type': 'application/json',\r",
+									"    },\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({ \r",
+									"            nome: 'teste',\r",
+									"            email: userEmail,\r",
+									"            password: 'Abc12345',\r",
+									"            administrador: 'true'\r",
+									"         })\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"pm.sendRequest(postRequest, function (err, response) {\r",
+									"    pm.globals.set('user_id', response.json()._id);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status Code 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Mensagem Correta\", function () {\r",
+									"    \r",
+									"    const jsonData = pm.response.json();\r",
+									"    \r",
+									"    if (jsonData.message !== \"Registro excluído com sucesso\") {\r",
+									"        pm.expect(jsonData.message).to.eql(\"Registro excluído com sucesso\");\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://serverest.dev/usuarios/:id",
+							"protocol": "https",
+							"host": [
+								"serverest",
+								"dev"
+							],
+							"path": [
+								"usuarios",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{user_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CT41: Exclusão de usuário inexistente",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status Code 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Mensagem Correta\", function () {\r",
+									"    \r",
+									"    const jsonData = pm.response.json();\r",
+									"    \r",
+									"    if (jsonData.message !== \"Nenhum registro excluído\") {\r",
+									"        pm.expect(jsonData.message).to.eql(\"Nenhum registro excluído\");\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://serverest.dev/usuarios/:id",
+							"protocol": "https",
+							"host": [
+								"serverest",
+								"dev"
+							],
+							"path": [
+								"usuarios",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{$randomInt}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CT42: Exclusão real de usuário",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const userEmail = pm.variables.replaceIn('{{$randomInt}}{{$randomEmail}}')\r",
+									"\r",
+									"const postRequest = {\r",
+									"  \r",
+									"    url: 'https://serverest.dev/usuarios',\r",
+									"    method: 'POST',\r",
+									"    header: {\r",
+									"        'content-type': 'application/json',\r",
+									"    },\r",
+									"\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({ \r",
+									"            nome: 'teste',\r",
+									"            email: userEmail,\r",
+									"            password: 'Abc12345',\r",
+									"            administrador: 'true'\r",
+									"         })\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"pm.sendRequest(postRequest, function (err, response) {\r",
+									"    pm.globals.set('user_id', response.json()._id);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const user_id = pm.variables.get('{{user_id}}')\r",
+									"\r",
+									"pm.test(\"Usuário não existe\", function () {\r",
+									"    \r",
+									"    const getRequest = {\r",
+									"    \r",
+									"    url: `https://serverest.dev/usuarios/${user_id}`,\r",
+									"    method: 'GET',\r",
+									"    header: {\r",
+									"        'content-type': 'application/json',\r",
+									"        },\r",
+									"    };\r",
+									"    \r",
+									"    pm.sendRequest(getRequest, function (err, response) {\r",
+									"        pm.expect(response).to.have.status(400);\r",
+									"    });\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://serverest.dev/usuarios/:id",
+							"protocol": "https",
+							"host": [
+								"serverest",
+								"dev"
+							],
+							"path": [
+								"usuarios",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{user_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

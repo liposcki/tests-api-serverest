@@ -79,14 +79,14 @@ Check if the product was created
     ...                                  method=${GET}
 
     #Verificação do status code retornado
-    Should Be Equal As Integers       ${SEARCH_PRODUCT_REQUEST["status"]}    200    #Bug: Deveria ser 201.
+    Should Be Equal As Integers       ${SEARCH_PRODUCT_REQUEST["status"]}    ${SUCCESS}
 
     #Verifica a criação real do segundo produto
     ${SEARCH_PRODUCT_REQUEST}    Http    url=${ENDPOINT_SEARCH_PRODUCT}${S_PRODUCT_ID}
     ...                                  method=${GET}
 
     #Verificação do status code retornado
-    Should Be Equal As Integers       ${SEARCH_PRODUCT_REQUEST["status"]}    200    #Bug: Deveria ser 201.
+    Should Be Equal As Integers       ${SEARCH_PRODUCT_REQUEST["status"]}    ${SUCCESS}
 
 
 Quantities must be debited from stock
